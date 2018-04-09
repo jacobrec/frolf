@@ -1,21 +1,8 @@
 import pymysql as mdb
-
+import sql
 
 def setup():
-    try:
-        serverinfoFile = open(".password", 'r')
-        username = serverinfoFile.readline().strip()
-        pw = serverinfoFile.readline().strip()
-        database = serverinfoFile.readline().strip()
-    except FileNotFoundError:
-        serverinfoFile = open(".password", 'w')
-        username = input("mysql username:")
-        pw = input("mysql password:")
-        database = input("mysql database:")
-        serverinfoFile.write(username + "\n")
-        serverinfoFile.write(pw + "\n")
-        serverinfoFile.write(database + "\n")
-
+    (username, pw, database) = sql.loginInfo()
     try:
         conn = mdb.connect(user=username, password=pw, db=database)
         return conn
@@ -30,7 +17,6 @@ def reset(cursor):
     cursor.execute('DROP TABLE IF EXISTS courses')
     cursor.execute('DROP TABLE IF EXISTS player_game')
 
-    init(cursor)
 
 
 def init(cursor):
@@ -69,17 +55,31 @@ def init(cursor):
 
 def newServer():
     conn = setup()
+    
     reset(conn.cursor())
     conn.commit()
+    
+    init(conn.cursor())
+    conn.commit()
+    
+    conn.close()
     print("New database created")
 
-def testData(conn):
+def testData():
+    conn = setup()
     cur = conn.cursor()
-    cur.execute('INSERT INTO groups (name, passcode) VALUES("Frisbee", "password")')
+    cur.execute('INSERT INTO groups (name, passcode) VALUES("Test", "password")')
+    cur.execute('INSERT INTO groups (name, passcode) VALUES("Test2", "password")')
     cur.execute('INSERT INTO courses(pars, name, grid) VALUES("[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,4]","Rundle", 1)')
-    cur.execute('INSERT INTO users(name, grid) VALUES("Jacob", 1), ("Ben", 1), ("Peter", 1), ("Isaac", 1), ("Graham", 1)')
+    cur.execute('INSERT INTO users(name, grid) VALUES("Testy McTestface", 1), ("Testy McTesterson", 1), ("Testa Testera", 1)')
 
+
+    cur.execute("SELECT * FROM groups WHERE grid = 1")
+    conn.commit()
+    conn.close()
 
 
 if __name__ == "__main__":
     newServer()
+    testData()
+
