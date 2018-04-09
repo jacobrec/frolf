@@ -5,6 +5,7 @@ import sql
 
 
 app = PocketTornado(8888)
+app.default_content = "application/json"
 db = sql.DatabaseManager(*sql.loginInfo())
 
 @app.get("/group/players/<int>")
@@ -51,5 +52,7 @@ def addNewGame(data, grid):
 def addNewCourse(data, grid):
     pass
 
-
+@app.get("/", content_type="text/plain")
+def welcome():
+    return """Welcome to the frisbee golf app. If you're seeing this page, you're using it wrong. Please use the app"""
 app.listen()
