@@ -7,14 +7,13 @@ UNDEFINED = "undefined"
 
 
 class PocketTornado():
-    def __init__(self, port, default_content="text/plain"):
-        self.port = port
+    def __init__(self, default_content="text/plain"):
         self.funcs = {}
         self.default_content = default_content
 
-    def listen(self):
+    def listen(self, port):
         app = self.createApp()
-        app.listen(self.port)
+        app.listen(port)
         tornado.ioloop.IOLoop.current().start()
 
     def apifunction(self, path, verb, content_type):

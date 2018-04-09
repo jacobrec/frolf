@@ -4,7 +4,7 @@ from api import PocketTornado
 import sql
 
 
-app = PocketTornado(8888)
+app = PocketTornado()
 app.default_content = "application/json"
 db = sql.DatabaseManager(*sql.loginInfo())
 
@@ -29,7 +29,7 @@ def getGroupList():
 
 
 @app.get("/player/<int>")
-def getPlayersById(piid):
+def getPlayersById(pid):
     pass
 
 
@@ -55,4 +55,5 @@ def addNewCourse(data, grid):
 @app.get("/", content_type="text/plain")
 def welcome():
     return """Welcome to the frisbee golf app. If you're seeing this page, you're using it wrong. Please use the app"""
-app.listen()
+
+app.listen(8888)
