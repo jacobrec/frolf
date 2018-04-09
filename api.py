@@ -1,4 +1,5 @@
 import re
+import time
 import tornado.web
 import json
 
@@ -7,9 +8,8 @@ UNDEFINED = "undefined"
 
 
 class PocketTornado():
-    def __init__(self, default_content="text/plain"):
+    def __init__(self):
         self.funcs = {}
-        self.default_content = default_content
 
     def listen(self, port):
         app = self.createApp()
@@ -17,8 +17,6 @@ class PocketTornado():
         tornado.ioloop.IOLoop.current().start()
 
     def apifunction(self, path, verb, content_type):
-        if content_type == UNDEFINED:
-            content_type = self.default_content
         path = re.sub("<int>", "(\\d+)", path)
         path = re.sub("<string>", "([^\\/]+)", path)
 
@@ -70,7 +68,7 @@ class PocketTornado():
 
     def newwrapper(self, func, verb, content_type):
         def wrapper(self, *args):
-            print(func, verb, content_type)
+            now = time.time()
             try:
                 if verb in ("post", "put"):
                     output = func(
@@ -79,15 +77,20 @@ class PocketTornado():
                     )
                 elif verb in ("get", "delete"):
                     output = func(*args)
-                print(output)
                 if output == ACCEPTED:
                     self.set_header("Content-Type", "text/plain")
                     self.set_status(202)
                     self.finish("202: Accepted")
+                elif output is None:
+                    self.set_header("Content-Type", "text/plain")
+                    self.set_status(204)
+                    self.finish()
                 else:
                     self.write(output)
-                    self.set_header("Content-Type", content_type)
+                    if content_type != UNDEFINED:
+                        self.set_header("Content-Type", content_type)
 
+                print("Success: {0} {1} ({2}) {3:.2f}ms".format(verb.upper(), self.request.path, self.request.remote_ip, ((time.time()-now)*1000)))
             except (KeyError, json.decoder.JSONDecodeError, Error400):
                 self.set_header("Content-Type", "text/plain")
                 self.set_status(400)
