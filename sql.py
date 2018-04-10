@@ -15,7 +15,7 @@ class DatabaseManager():
 
     def getGroupByLogin(self, name, password):
         self.cur.execute(
-            "SELECT (grid, password) FROM groups WHERE name = {}".format(
+            "SELECT grid, password FROM groups WHERE name = {}".format(
                 grid.strip()))
         (g, p) = self.cur.fetchone()
         if p != password:
@@ -23,23 +23,34 @@ class DatabaseManager():
         return g
 
     def getPlayersByGroup(self, grid):
-        self.cur.execute("SELECT (pid, name) FROM users WHERE grid = {}".format(grid))
+        self.cur.execute(
+            "SELECT pid, name FROM users WHERE grid = {}".format(grid))
         return self.cur.fetchall()
 
     def getCoursesByGroup(self, grid):
-        self.cur.execute("SELECT (cid, pars, name) FROM courses WHERE grid = {}".format(grid))
+        self.cur.execute(
+            "SELECT cid, pars, name FROM courses WHERE grid = {}".format(grid))
         return self.cur.fetchall()
 
     def getPlayerName(self, pid):
         self.cur.execute("SELECT (name) FROM users WHERE pid = {}".format(pid))
-        return self.cur.fetchone()
+        try:
+            return self.cur.fetchone()[0]
+        except BaseException:
+            return None
+
+    def getAllGamesByPlayer(self, pid):
+        self.cur.execute(
+            "SELECT courses.cid, time, scores, player_game.gid, pars FROM player_game JOIN games ON player_game.gid = games.gid JOIN courses ON games.cid = courses.cid  WHERE pid = {}".format(pid))
+        return self.cur.fetchall()
 
     def getGameTime(self, gid):
         self.cur.execute("SELECT (time) FROM games WHERE gid = {}".format(gid))
         return self.cur.fetchone()
 
     def getCourse(self, cid):
-        self.cur.execute("SELECT (pars, name) FROM courses WHERE cid = {}".format(cid))
+        self.cur.execute(
+            "SELECT pars, name FROM courses WHERE cid = {}".format(cid))
         return self.cur.fetchone()
 
     def putGame(self, pids, scores, cid, grid):
@@ -59,7 +70,6 @@ class DatabaseManager():
         cur.execute('INSERT INTO courses(pars, name, grid) VALUES("{}",{}, {})'
                     .format(json.dumps(pars), name, grid))
         self.conn.commit()
-
 
 
 def loginInfo():

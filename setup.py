@@ -74,7 +74,8 @@ def testData():
     cur.execute('INSERT INTO users(name, grid) VALUES("Testy McTestface", 1), ("Testy McTesterson", 1), ("Testa Testera", 1)')
 
 
-    cur.execute("SELECT * FROM groups WHERE grid = 1")
+    cur.execute('INSERT INTO games (gid, grid, cid, time) VALUES(1, 1, 1, 210323), (2, 1, 1, 12032)')
+    cur.execute('INSERT INTO player_game (pid, gid, scores) VALUES (1, 1, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,4]"), (1, 2, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,10]"), (2, 1, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,3]"), (2, 2, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,5]")')
     conn.commit()
     conn.close()
 

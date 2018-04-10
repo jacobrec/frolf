@@ -1,4 +1,5 @@
 import json
+import golf
 
 from api import PocketTornado
 import sql
@@ -10,12 +11,12 @@ db = sql.DatabaseManager(*sql.loginInfo())
 
 @app.get("/group/players/<int>")
 def getPlayersFromGroup(grid):
-    pass
+    return json.dumps(db.getPlayersByGroup(grid))
 
 
 @app.get("/group/courses/<int>")
 def getCoursesFromGroup(grid):
-    pass
+    return json.dumps(db.getCoursesByGroup(grid))
 
 
 @app.get("/group/<string>/<string>")
@@ -30,7 +31,14 @@ def getGroupList():
 
 @app.get("/player/<int>")
 def getPlayersById(pid):
-    pass
+    player = {}
+    player["name"] = db.getPlayerName(pid)
+
+    games = db.getAllGamesByPlayer(pid)
+    player["games"] = [x[3] for x in games]
+    player["handicap"] = golf.handicap([json.loads(x[2]) for x in games], [json.loads(x[4]) for x in games])
+
+    return json.dumps(player)
 
 
 @app.get("/games/<int>")
