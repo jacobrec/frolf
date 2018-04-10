@@ -1,0 +1,27 @@
+# Frisbee Golf Server
+
+## Database scheme
+--------------------------------------------------------
+| USERS           | Pid  | Name   | Grid       |       |
+--------------------------------------------------------
+| GAMES           | Gid  | Cid    | Time       | Grid  |
+--------------------------------------------------------
+| PLAYER_GAMES    | Pid  | Gid    | Scores[]   |       |
+--------------------------------------------------------
+| GROUPS          | Grid | Name   | Passwords  |       |
+--------------------------------------------------------
+| COURSES         | Cid  | Pars[] | Name       | Grid  |
+--------------------------------------------------------
+
+## Get Requests
+/group/players/<Grid>   >> Pid[]
+/group/courses/<Grid>   >> Cid[]
+/group/<name>           >> Grid
+/group                  >> Grid[]
+/player/<pid>           >> {Name, Handicap, Grid, Gid[]}
+/games/<gid>            >> {Pid[], Scores[], Total[], Cid, time}
+/course/<cid>           >> {Name, Pars[]}
+
+## post Requests
+/newgame/<Grid>         << {Pid[], Scores[], Cid}
+/newcourse/<Grid>       << {Pars[], Name}
