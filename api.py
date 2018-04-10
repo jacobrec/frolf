@@ -1,3 +1,8 @@
+"""
+A simple tornado routing package
+Written by Jacob and Peter
+"""
+
 import re
 import time
 import tornado.web
@@ -89,8 +94,12 @@ class PocketTornado():
                     self.write(output)
                     if content_type != UNDEFINED:
                         self.set_header("Content-Type", content_type)
-
-                print("Success: {0} {1} ({2}) {3:.2f}ms".format(verb.upper(), self.request.path, self.request.remote_ip, ((time.time()-now)*1000)))
+                prettyPrintServerMessage(
+                    self._status_code,
+                    verb,
+                    self.request.path,
+                    self.request.remote_ip,
+                    ((time.time() - now) * 1000))
             except (KeyError, json.decoder.JSONDecodeError, Error400):
                 self.set_header("Content-Type", "text/plain")
                 self.set_status(400)
@@ -108,9 +117,63 @@ class PocketTornado():
         ])
 
 
+def prettyPrintServerMessage(status, verb, path, ip, time):
+    
+    col = None
+    if 200 <= status and status < 300:
+        col = colourPrinter.green
+    elif 200 <= status and status < 300:
+        col = colourPrinter.yellow
+    elif 200 <= status and status < 300:
+        col = colourPrinter.red
+
+    verbColours = {
+        "GET" : colourPrinter.green,
+        "POST": colourPrinter.blue,
+        "PUT": colourPrinter.yellow,
+        "DELETE": colourPrinter.red
+    }
+
+    verbColour = colourPrinter.setColour(verbColours[verb.upper()])
+
+    if time < 1000:
+        timeColour = colourPrinter.setColour(colourPrinter.green)
+    elif time < 5 * 1000:
+        timeColour = colourPrinter.setColour(colourPrinter.yellow)
+    else:
+        timeColour = colourPrinter.setColour(colourPrinter.red)
+    
+    
+    statusColour = ""
+    normal = colourPrinter.resetColour()
+    if col is not None:
+        statusColour = colourPrinter.setColour(colourPrinter.black, col)
+    
+    
+    print((statusColour+"|{4}|"+normal+": "+verbColour+"{0}"+normal+" {1} ({2}) "+timeColour+"{3:.2f}ms"+normal).format(
+            verb.upper(), path, ip, time, str(status)))
+
+class colourPrinter():
+    black = 0
+    red = 1
+    green = 2
+    yellow = 3
+    blue = 4
+    magenta = 5
+    cyan = 6
+    white = 7
+
+    @staticmethod
+    def setColour(forground=white, background=black):
+        return "\033[3{};4{}m".format(forground, background)
+    
+    @staticmethod
+    def resetColour():
+        return "\033[0m"
+
 class Error404(Exception):
     pass
 
 
 class Error400(Exception):
-    pass
+    passi
