@@ -24,6 +24,8 @@ class PocketTornado():
     def apifunction(self, path, verb, content_type):
         path = re.sub("<int>", "(\\d+)", path)
         path = re.sub("<string>", "([^\\/]+)", path)
+        
+        path += "/?"
 
         def holder(func):
             if path not in self.funcs:
@@ -176,4 +178,4 @@ class Error404(Exception):
 
 
 class Error400(Exception):
-    passi
+    pass
