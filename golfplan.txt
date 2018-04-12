@@ -19,9 +19,43 @@
 /group/<name>           >> Grid
 /group                  >> Grid[]
 /player/<pid>           >> {Name, Handicap, Grid, Gid[]}
-/games/<gid>            >> {Pid[], Scores[], Total[], Cid, time}
+/games/<gid>            >> {Pid[], Scores[], Cid, time}
 /course/<cid>           >> {Name, Pars[]}
 
 ## post Requests
 /newgame/<Grid>         << {Pid[], Scores[], Cid}
 /newcourse/<Grid>       << {Pars[], Name}
+/newplayer/<Grid>       << {Name}
+
+
+
+# Client
+All of these assumes the same group
+
+## Player page
+Name
+Handicap
+@[games]
+@"Favorite course"
+
+## Game page
+@Course, par
+Time
+@[Players: name, scores]
+
+## Course page
+Name
+Pars
+@[games]
+
+## new course page
+
+## new player page
+
+
+## newgame page
+course select
+player select
+
+## Playing page
+just like last app

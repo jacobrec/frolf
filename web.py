@@ -21,7 +21,12 @@ def getCoursesFromGroup(grid):
 
 @app.get("/group/<string>/<string>")
 def getGroupByLogin(user, pw):
-    pass
+    group = db.getGroupByLogin(user, pw)
+    print(group)
+    if group is None:
+        return ""
+    else:
+        return json.dumps(group)
 
 
 @app.get("/group")
@@ -43,12 +48,18 @@ def getPlayersById(pid):
 
 @app.get("/games/<int>")
 def getGameById(gid):
-    pass
-
+    game = {}
+    stats = db.getGame(gid)
+    game["time"] = stats[0][3]
+    game["players"] = [x[0] for x in stats]
+    game["scores"] = [x[1] for x in stats]
+    course = db.getCourse(stats[0][2])
+    game["course"] = {"id": stats[0][2], "pars": course[0],"name":course[1]}
+    return json.dumps(game)
 
 @app.get("/course/<int>")
 def getCourseById(cid):
-    pass
+    return json.dumps(db.getCourse(cid))
 
 
 @app.post("/game/<int>")
@@ -59,6 +70,11 @@ def addNewGame(data, grid):
 @app.post("/course/<int>")
 def addNewCourse(data, grid):
     pass
+
+@app.post("players/<int>")
+def addNewPlayer(data, grid):
+    pass
+
 
 @app.get("/", content_type="text/plain")
 def welcome():
