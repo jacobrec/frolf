@@ -1,0 +1,38 @@
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+}
+
+.hor {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.ver {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.cent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drift {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.spread {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.but {
+    cursor: pointer;
+}

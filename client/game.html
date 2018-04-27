@@ -1,0 +1,75 @@
+<!Doctype html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        #go-btn {
+            position: absolute;
+            bottom: 0px;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper green"> <a href="#" class="brand-logo">&nbsp;Frolf&nbsp;</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="scores.html">Scores</a></li>
+                <li><a href="courses.html">Courses</a></li>
+                <li><a href="games.html">Games</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div> Playing frolf </div>
+    <script>
+        var info;
+        var game;
+        
+        window.onload = function () {
+            M.AutoInit();
+            info = parseGameInfo();
+            game = [];
+            game.push({"name": "Par", "score": getParsFromCid(info.course)});
+            for(let g of info.players){
+                game.push({"name": getNameByPid(g), "score": game[0].score.map((v, i, a) => {return 0;})});
+            }
+        }
+        
+        function getNameByPid(pid){
+            let players = JSON.parse(localStorage.getItem("names"));
+            for(let p of players){
+                if(p[0] == pid){
+                    return p[1];
+                }
+            }
+        }
+        
+        function getParsFromCid(cid){
+            let courses = JSON.parse(localStorage.getItem("courses"));
+            for(let c of courses){
+                if(c[0] == cid){
+                    return JSON.parse(c[1]);
+                }
+            }
+        }
+        
+
+        /* Parsing query strings: https://stackoverflow.com/a/901144 */
+        function parseGameInfo() {
+            var regex = new RegExp("[?&]" + "data".replace(/[\[\]]/g, "\\$&") + "(=([^&#]*)|&|#|$)")
+                , results = regex.exec(window.location.href);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return JSON.parse(atob(decodeURIComponent(results[2].replace(/\+/g, " "))));
+        }
+    </script>
+</body>

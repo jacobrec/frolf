@@ -15,17 +15,22 @@ UNDEFINED = "undefined"
 class PocketTornado():
     def __init__(self):
         self.funcs = {}
+        self.handlers = []
 
-    def listen(self, port):
-        app = self.createApp()
+    def listen(self, port, debug=False):
+        app = self.createApp(debug)
         app.listen(port)
         tornado.ioloop.IOLoop.current().start()
 
-    def apifunction(self, path, verb, content_type):
+    def replaceStrings(self, path):
         path = re.sub("<int>", "(\\d+)", path)
         path = re.sub("<string>", "([^\\/]+)", path)
-        
+        path = re.sub("<all>", "(.*)", path)
         path += "/?"
+        return path
+
+    def apifunction(self, path, verb, content_type):
+        path = self.replaceStrings(path)
 
         def holder(func):
             if path not in self.funcs:
@@ -47,13 +52,43 @@ class PocketTornado():
     def put(self, path, content_type=UNDEFINED):
         return self.apifunction(path, "put", content_type)
 
+    def static(self, webpath, localpath, remap={}):
+        webpath = self.replaceStrings(webpath)
+        a = tornado.web.StaticFileHandler
+        fmap = {}
+        for key in remap.keys():
+            if key.endswith("/"):
+                if key == "/":
+                    fmap[""] = remap[key]
+                fmap[key[:-1]] = remap[key]
+            else:
+                fmap[key+"/"] = remap[key]
+
+        for key in fmap.keys():
+            remap[key] = fmap[key]
+
+
+        def fun(self, path):
+            if path in remap:
+                return remap[path]
+            return path
+
+        a.parse_url_path = fun
+
+        self.funcs[webpath] = ((a, {'path':localpath}))
+        def wrap(func):
+            return func
+        return wrap
+
     def endpoints(self):
-        handlers = []
         for path in self.funcs:
-            handlers.append((path, self.handler(
+            if isinstance(self.funcs[path], tuple):
+                self.handlers.append((path, *self.funcs[path]))
+                continue
+            self.handlers.append((path, self.handler(
                 self.funcs[path]
             )))
-        return handlers
+        return self.handlers
 
     def handler(superself, methods):
         class tornadoHandler(tornado.web.RequestHandler):
@@ -113,10 +148,10 @@ class PocketTornado():
 
         return wrapper
 
-    def createApp(self):
+    def createApp(self, debu):
         return tornado.web.Application([
             *self.endpoints(),
-        ])
+        ], debug=debu)
 
 
 def prettyPrintServerMessage(status, verb, path, ip, time):

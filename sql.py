@@ -17,7 +17,9 @@ class DatabaseManager():
         self.cur.execute(
             "SELECT grid, passcode FROM groups WHERE name = '{}'".format(
                 name.strip()))
-        (g, p) = self.cur.fetchone()
+        a = (self.cur.fetchone())
+        print(a)
+        (g, p) = a 
         if p != password:
             return
         return g
