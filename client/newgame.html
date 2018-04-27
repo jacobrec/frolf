@@ -90,7 +90,7 @@
             m = getCourseKeyMap();
             data.course = m.get(data.course.trim());
             
-            window.location.href = server+"/game.html?data="+btoa(JSON.stringify(data));
+            window.location.href = server+"/playing.html?data="+btoa(JSON.stringify(data));
             
         }
         function getNameKeyMap(){

@@ -81,7 +81,7 @@ def testData():
         'INSERT INTO users(name, grid) VALUES("Testy2 McTestface", 2), ("Testy2 McTesterson", 2), ("Testa2 Testera", 2)')
 
     cur.execute(
-        'INSERT INTO games (gid, grid, cid, time) VALUES(1, 1, 1, 210323), (2, 1, 1, 12032)')
+        'INSERT INTO games (gid, grid, cid, time) VALUES(1, 1, 1, 1524844913), (2, 1, 1, 1524846356)')
     cur.execute(
         'INSERT INTO player_game (pid, gid, scores) VALUES (1, 1, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,4]"), (1, 2, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,10]"), (2, 1, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,3]"), (2, 2, "[3,3,3,3,3,3,4,3,3,3,3,3,3,3,3,3,3,5]")')
     conn.commit()

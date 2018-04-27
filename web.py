@@ -62,7 +62,21 @@ def getGameById(gid):
 
 @app.get("/course/<int>")
 def getCourseById(cid):
-    return json.dumps(db.getCourse(cid))
+    course = {}
+    c = db.getCourse(cid)
+    course["name"] = c[1]
+    course["par"] = c[0]
+    r = db.getRecentGamesAtCourse(cid)
+    a = {} 
+    for x in r: # time, gid, pid, cid
+        gid = x[1]
+        if gid in a:
+            a[gid]["pid"].append(x[2])
+        else:
+            a[gid] = {"time": x[0], "gid": x[1], "pid": [x[2]], "cid": x[3]} 
+
+    course["recent"] = list(a.values())
+    return json.dumps(course)
 
 
 @app.post("/game/<int>")

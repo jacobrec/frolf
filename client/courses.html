@@ -12,6 +12,20 @@
     <script src="js/coms.js"></script>
 
     <style>
+        li a{
+            text-align: center;
+            width: 100%;
+        }
+         li h4{
+            text-align: center;
+            width: 100%;
+        }
+        li{
+            width: 100%;
+        }
+        ul{
+            width: 80vw;
+        }
     </style>
 </head>
 
@@ -32,58 +46,26 @@
         <li><button class="signout btn-flat" onclick="logout()">Sign Out</button></li>
     </ul>
     <div class="ver cent">
-        <h4 id="course"></h4>
-        <p id="pars"></p>
-        <p id="time"></p>
-        
         <ul id="list" class="collection with-header">
-            <li class="collection-header"><h6>Players</h6></li>
+            <li class="collection-header"><h4>Courses</h4></li>
         </ul>
     
     </div>
     <script>
         window.onload = function () {
             M.AutoInit();
-            let cid = window.location.search.slice(1);
-            loadCourseInfo(cid);
-            loadRecentGames(cid);
+            addCourses();
         }      
-        
-        function loadRecentGames(cid){
-            get("/course/"+cid, (data) => {
-                let course = JSON.parse(data);
-                document.getElementById("course").innerHTML = course.name;
-                document.getElementById("pars").innerHTML = course.par;
-                course.recent.sort((a, b) => b.time - a.time);
-                for(let i in course.recent){
-                    if(i > 10){
-                        break;
-                    }
-                    addGame(course.recent[i].gid,course.recent[i].time, course.recent[i].pid);
-                }
-                
-            });
-        }
-        function addGame(gid, time, pids){
-            let li = document.createElement("li");
-            li.setAttribute("class", "collection-item");
-            li.innerHTML = '<a href="game.html?'+gid+'" class="btn-flat">'+prettyTime(time)+'</a>';
-            document.getElementById("list").appendChild(li);
-        }
-        
-        function prettyTime(time){
-            let t = new Date(time*1000);
-            return t.toLocaleString();
-        }
-        
-        function loadCourseInfo(cid){
+        function addCourses(){
             for(let c of JSON.parse(localStorage.getItem("courses"))){
-                if(c[0] == cid){
-                    document.getElementById("course").innerHTML = c[2];
-                    document.getElementById("pars").innerHTML = c[1];
-                }
+                addCourse(c[2], c[0]);
             }
         }
-       
+        function addCourse(name, id){
+            let li = document.createElement("li");
+            li.setAttribute("class", "collection-item");
+            li.innerHTML = '<a href="course.html?'+id+'" class="btn-flat">'+name+'</a>';
+            document.getElementById("list").appendChild(li);
+        }
     </script>
 </body>

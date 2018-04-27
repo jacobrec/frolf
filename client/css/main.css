@@ -36,3 +36,16 @@ body {
 .but {
     cursor: pointer;
 }
+
+.signout{
+    padding-left: 32px;
+    text-transform: capitalize;
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    text-align: left;
+    
+}
+.signout:hover {
+    background-color: rgba(0,0,0,0.05);
+}

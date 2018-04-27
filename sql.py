@@ -18,7 +18,6 @@ class DatabaseManager():
             "SELECT grid, passcode FROM groups WHERE name = '{}'".format(
                 name.strip()))
         a = (self.cur.fetchone())
-        print(a)
         (g, p) = a 
         if p != password:
             return
@@ -54,6 +53,12 @@ class DatabaseManager():
         self.cur.execute(
             "SELECT pars, name FROM courses WHERE cid = {}".format(cid))
         return self.cur.fetchone()
+
+    def getRecentGamesAtCourse(self, cid):
+        self.cur.execute(
+            "SELECT time, player_game.gid, pid, games.cid FROM player_game JOIN games ON player_game.gid = games.gid JOIN courses ON games.cid = courses.cid  WHERE games.cid = {}".format(cid))
+        return self.cur.fetchall()
+
 
     def getGame(self, gid):
         self.cur.execute("SELECT pid, scores, cid, time FROM player_game JOIN games on player_game.gid = games.gid where player_game.gid = {}".format(gid))
