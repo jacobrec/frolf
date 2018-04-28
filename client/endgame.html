@@ -63,7 +63,7 @@
             }
             storeData(meta);
             console.log(meta);
-            sync();
+            //sync();
         }
 
         function getNameKeyMap() {
@@ -80,6 +80,9 @@
             let name_key = new Map();
             for (let name of names) {
                 name_key.set(name[0], name[2]);
+            }
+            for (let c of info.newStuff.courses) {
+                name_key.set(c, c);
             }
             return name_key;
         }

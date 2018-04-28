@@ -82,10 +82,24 @@ class DatabaseManager():
                         scores[x])))
         self.conn.commit()
 
-    def putCourse(self, pars, name, grid):
-        cur.execute('INSERT INTO courses(pars, name, grid) VALUES("{}",{}, {})'
-                    .format(json.dumps(pars), name, grid))
+    def putPlayer(self, name, grid):
+        self.cur.execute('INSERT INTO users(name, grid) VALUES("{}", {})'
+                         .format(name, grid))
+        self.cur.execute('SELECT pid FROM users WHERE (name, grid) = ("{}", {})'
+                         .format(name, grid))
         self.conn.commit()
+        return self.cur.fetchone()[0]
+
+    def putCourse(self, pars, name, grid):
+        self.cur.execute(
+            'INSERT INTO courses(pars, name, grid) VALUES("{}","{}", {})' .format(
+                json.dumps(pars), name, grid))
+
+        self.cur.execute(
+            'SELECT cid FROM courses WHERE (pars, name, grid) = ("{}","{}", {})'.format(
+                json.dumps(pars), name, grid))
+        self.conn.commit()
+        return self.cur.fetchone()[0]
 
 
 def loginInfo():

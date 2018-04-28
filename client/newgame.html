@@ -16,6 +16,17 @@
             bottom: 0px;
             width: 100vw;
         }
+        
+        #word-getter {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000CC;
+            z-index: 1;
+            display: none;
+        }
     </style>
 </head>
 
@@ -36,16 +47,34 @@
                 <div class="collapsible-header">Courses</div>
                 <div class="collapsible-body"> Select your course!
                     <ul id="course-selector"> </ul>
+                    <div id="new-course-stuff" class="ver cent" style="padding-top: 10px;">
+                        <button class="waves-effect waves-light btn" onclick="newCourse()">New</button>
+                    </div>
                 </div>
             </li>
             <li>
                 <div class="collapsible-header">People</div>
                 <div class="collapsible-body">
                     <ul id="people-selector"> </ul>
+                    <div class="ver cent" style="padding-top: 10px;">
+                        <button class="waves-effect waves-light btn" onclick="newPerson()">New</button>
+                    </div>
                 </div>
             </li>
         </ul> <a id="go-btn" onclick="startGame()" class="btn-large waves-effect waves-light orange"><i class="material-icons">golf_course</i></a> </div>
+    <div id="word-getter" class="ver cent">
+        <div class="card">
+            <div class="card-content"> <span id="word-getter-title" class="card-title">title</span>
+                <div class="input-field">
+                    <input id="word-getter-word" type="text">
+                    <label id="word-getter-label" for="word">hint</label>
+                </div>
+            </div>
+            <div class="card-action hor drift"> <a class="clickable" onclick="hideWordGetter()">Cancel</a> <a class="clickable" onclick="wordGot()">Confirm</a></div>
+        </div>
+    </div>
     <script>
+        var newStuff;
         window.onload = function () {
             M.AutoInit();
             for (let course of JSON.parse(localStorage.getItem("courses"))) {
@@ -54,6 +83,43 @@
             for (let name of JSON.parse(localStorage.getItem("names"))) {
                 addPeople(name[1]);
             }
+            newStuff = {
+                "players": []
+                , "courses": []
+            };
+        }
+
+        function newPerson() {
+            getWord("New Player", "Player Name", (word) => {
+                addPeople(word);
+                newStuff.players.push(word.trim())
+            });
+        }
+
+        function newCourse() {
+            getWord("New Course", "Course Name", (word) => {
+                addCourse(word);
+                newStuff.courses.push(word.trim())
+                document.getElementById("new-course-stuff").style.display = "none";
+            });
+        }
+        var onWordGotted;
+
+        function getWord(title, hint, callback) {
+            document.getElementById("word-getter-label").innerHTML = hint;
+            document.getElementById("word-getter-title").innerHTML = title;
+            onWordGotted = callback;
+            document.getElementById("word-getter-word").value = "";
+            document.getElementById("word-getter").style.display = "flex";
+        }
+
+        function hideWordGetter() {
+            document.getElementById("word-getter").style.display = "none";
+        }
+
+        function wordGot() {
+            onWordGotted(document.getElementById("word-getter-word").value);
+            hideWordGetter();
         }
 
         function addCourse(name) {
@@ -67,28 +133,40 @@
         }
 
         function startGame() {
+            let data = extractData();
+            let m = getNameKeyMap();
+            for (let n of newStuff.players) {
+                m.set(n, n);
+            }
+            for (let i in data.players) {
+                data.players[i] = m.get(data.players[i]);
+            }
+            m = getCourseKeyMap();
+            for (let n of newStuff.courses) {
+                m.set(n, n);
+            }
+            data.course = m.get(data.course);
+            data.newStuff = newStuff;
+            window.location.href = server + "/playing.html?data=" + btoa(JSON.stringify(data));
+        }
+
+        function extractData() {
             let data = {};
             data.players = [];
             var inputs = document.getElementsByTagName('input');
             for (var i = 0; i < inputs.length; i++) {
                 if (inputs[i].type.toLowerCase() == 'checkbox') {
                     if (inputs[i].checked) {
-                        data.players.push(inputs[i].parentElement.innerText);
+                        data.players.push(inputs[i].parentElement.innerText.trim());
                     }
                 }
                 else if (inputs[i].type.toLowerCase() == 'radio') {
                     if (inputs[i].checked) {
-                        data.course = inputs[i].parentElement.innerText;
+                        data.course = inputs[i].parentElement.innerText.trim();
                     }
                 }
             }
-            let m = getNameKeyMap();
-            for (let i in data.players) {
-                data.players[i] = m.get(data.players[i].trim());
-            }
-            m = getCourseKeyMap();
-            data.course = m.get(data.course.trim());
-            window.location.href = server + "/playing.html?data=" + btoa(JSON.stringify(data));
+            return data;
         }
 
         function getNameKeyMap() {

@@ -88,7 +88,6 @@ def getGamesByGroup(grid):
             a[x[3]]["pid"].append(x[4])
         else:
             a[x[3]] = {"cid": x[0], "time": x[1], "gid": x[3], "pid": [x[4]]}
-    print(a)
     return json.dumps({"games": list(a.values())})
 
 
@@ -99,12 +98,12 @@ def addNewGame(data, grid):
 
 @app.post("/course/<int>")
 def addNewCourse(data, grid):
-    pass
+    return json.dumps({"cid": db.putCourse(data["pars"], data["name"], grid)}) 
 
 
 @app.post("/players/<int>")
 def addNewPlayer(data, grid):
-    pass
+    return json.dumps({"pid": db.putPlayer(data["name"], grid)}) 
 
 
 app.static("/<all>", r"client/", remap={"/": "index.html"})
