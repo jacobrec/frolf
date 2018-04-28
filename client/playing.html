@@ -79,6 +79,10 @@
             height: 80vh;
             max-height: 80vh;
         }
+        
+        .close {
+            font-size: 0.7em;
+        }
     </style>
 </head>
 
@@ -251,7 +255,7 @@
             let score_back = scores.slice(9, 18).map(paddedNum);
             let total = scores.reduce((a, b) => a + b);
             let li = document.createElement('li');
-            li.setAttribute("class", "collection-item ver");
+            li.setAttribute("class", "collection-item ver hor-scroll");
             li.innerHTML = `
                     <div class="hor spread">
                         <p>${name}</p>

@@ -29,12 +29,40 @@ function sync() {
 }
 
 function syncGames() {
+    // TODO: clean this up at some point, it's a mess
     let todo = JSON.parse(localStorage.getItem("tosync") || "[]");
-    for (let game of todo) {
+    for (let g in todo) {
+        let game = todo[g];
         console.log(game);
-        if (game.info.newStuff.players.length > 0) {}
-        if (game.info.newStuff.courses.length > 0) {}
-        sendGame(game);
+        if (game.info.newStuff.players.length > 0) {
+            let p = 0;
+            post("/players/" + localStorage.getItem("groupid"), JSON.stringify({
+                "name": game.info.newStuff.players[p]
+            }), (data) => {
+                game.info.players = game.info.players.map((v, i, a) => (game.info.newStuff.players[p] == v ? JSON.parse(data).pid : v));
+                game.info.newStuff.players = game.info.newStuff.players.filter((v, i, a) => p != i);
+                todo[g] = game;
+                localStorage.setItem("tosync", JSON.stringify(todo));
+                syncGames();
+            });
+        }
+        else if (game.info.newStuff.courses.length > 0) {
+            if (game.info.newStuff.courses == game.info.course) {
+                post("/course/" + localStorage.getItem("groupid"), JSON.stringify({
+                    "pars": game.scores[0].score
+                    , "name": game.info.newStuff.courses[0]
+                }), (data) => {
+                    game.info.course = JSON.parse(data).cid;
+                    game.info.newStuff.courses = [];
+                    todo[g] = game;
+                    localStorage.setItem("tosync", JSON.stringify(todo));
+                    syncGames();
+                });
+            }
+        }
+        else {
+            sendGame(game);
+        }
     }
 }
 

@@ -24,6 +24,10 @@
             width: 80vw;
             height: 65vh;
         }
+        
+        .close {
+            font-size: 0.7em;
+        }
     </style>
 </head>
 
@@ -63,7 +67,7 @@
             }
             storeData(meta);
             console.log(meta);
-            //sync();
+            sync();
         }
 
         function getNameKeyMap() {
@@ -104,6 +108,8 @@
         }
 
         function addScorePlayer(name, scores) {
+            let pid = getNameKeyMap().get(name);
+            let handicap = getHandicap(pid);
             let paddedNum = (v, i, a) => {
                 if (v < 10) {
                     return "&nbsp;&nbsp;" + v;
@@ -118,7 +124,8 @@
             let total = scores.reduce((a, b) => a + b);
             let li = document.createElement('li');
             li.setAttribute("class", "collection-item ver");
-            li.innerHTML = `
+            if (name == "Par") {
+                li.innerHTML = `
                     <div class="hor spread">
                         <p>${name}</p>
                         <div class="hor drift">
@@ -130,7 +137,42 @@
                         <p class="close">${score_front}</p>
                         <p class="close">${score_back}</p>
                     </div>`;
+            }
+            else {
+                li.innerHTML = `
+                    <div class="hor spread">
+                        <p>${name}</p>
+                        <div class="hor drift">
+                            <p>Total:&nbsp;</p>
+                            <p>${total}</p>
+                        </div>
+                        
+                    </div>
+                    <div>
+                        <p class="close">${score_front}</p>
+                        <p class="close">${score_back}</p>
+                    </div>
+                    <div class="hor drift">
+                        <div class="hor drift">
+                            <p>Handicap:&nbsp;</p>
+                            <p>${handicap}</p>
+                        </div>
+                        <div class="hor drift">
+                            <p>Adjusted score:&nbsp;</p>
+                            <p>${total - handicap}</p>
+                        </div>
+                    </div>`;
+            }
             document.getElementById("scores").appendChild(li);
+        }
+
+        function getHandicap(name) {
+            let names = JSON.parse(localStorage.getItem("names"));
+            let name_key = new Map();
+            for (let name of names) {
+                name_key.set(name[0], name[2]);
+            }
+            return name_key.get(name);
         }
 
         function storeData(game) {

@@ -12,7 +12,9 @@ db = sql.DatabaseManager(*sql.loginInfo())
 
 @app.get("/group/players/<int>")
 def getPlayersFromGroup(grid):
-    return json.dumps(db.getPlayersByGroup(grid))
+    pl = db.getPlayersByGroup(grid)
+    pl = [[x[0], x[1], golf.getHandicap(x[0], db)] for x in pl]
+    return json.dumps(pl)
 
 
 @app.get("/group/courses/<int>")
