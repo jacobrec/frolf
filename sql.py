@@ -18,7 +18,7 @@ class DatabaseManager():
             "SELECT grid, passcode FROM groups WHERE name = '{}'".format(
                 name.strip()))
         a = (self.cur.fetchone())
-        (g, p) = a 
+        (g, p) = a
         if p != password:
             return
         return g
@@ -40,6 +40,11 @@ class DatabaseManager():
         except BaseException:
             return None
 
+    def getAllGamesByGroup(self, grid):
+        self.cur.execute(
+            "SELECT courses.cid, time, scores, player_game.gid, pid FROM player_game JOIN games ON player_game.gid = games.gid JOIN courses ON games.cid = courses.cid  WHERE courses.grid = {}".format(grid))
+        return self.cur.fetchall()
+
     def getAllGamesByPlayer(self, pid):
         self.cur.execute(
             "SELECT courses.cid, time, scores, player_game.gid, pars FROM player_game JOIN games ON player_game.gid = games.gid JOIN courses ON games.cid = courses.cid  WHERE pid = {}".format(pid))
@@ -59,15 +64,15 @@ class DatabaseManager():
             "SELECT time, player_game.gid, pid, games.cid FROM player_game JOIN games ON player_game.gid = games.gid JOIN courses ON games.cid = courses.cid  WHERE games.cid = {}".format(cid))
         return self.cur.fetchall()
 
-
     def getGame(self, gid):
-        self.cur.execute("SELECT pid, scores, cid, time FROM player_game JOIN games on player_game.gid = games.gid where player_game.gid = {}".format(gid))
+        self.cur.execute(
+            "SELECT pid, scores, cid, time FROM player_game JOIN games on player_game.gid = games.gid where player_game.gid = {}".format(gid))
         return self.cur.fetchall()
 
-    def putGame(self, pids, scores, cid, grid):
+    def putGame(self, pids, scores, cid, time, grid):
         self.cur.execute(
             "INSERT INTO games (cid, time, grid) VALUES({}, {}, {})".format(
-                cid, int(time.time()), grid))
+                cid, time, grid))
         self.cur.execute("SELECT LAST_INSERT_ID()")
         gid = self.cur.fetchone()[0]
         for x in range(len(pids)):

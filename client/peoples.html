@@ -11,12 +11,22 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/coms.js"></script>
     <style>
-        h4 {
+        #list li a {
             text-align: center;
+            width: 100%;
         }
         
-        .item {
-            width: 60vw;
+        #list li h4 {
+            text-align: center;
+            width: 100%;
+        }
+        
+        #list li {
+            width: 100%;
+        }
+        
+        #list {
+            width: 80vw;
         }
     </style>
 </head>
@@ -44,45 +54,27 @@
     <div class="ver cent">
         <ul id="list" class="collection with-header">
             <li class="collection-header">
-                <h4>Handicap</h4></li>
+                <h4>People</h4></li>
         </ul>
     </div>
     <script>
         window.onload = function () {
             M.AutoInit();
-            getHandicaps(getPids());
+            addCourses();
             sync();
         }
 
-        function addItem(name, handicap, pid) {
-            let li = document.createElement("li");
-            li.setAttribute("class", "item hor spread collection-item clickable");
-            li.onclick = function () {
-                window.location.href = "person.html?" + pid
-            };
-            li.innerHTML = "<p>" + name + ": </p><p>" + handicap + "</p>";
-            document.getElementById("list").appendChild(li);
-        }
-
-        function getHandicaps() {
-            let names = JSON.parse(localStorage.getItem("names"));
-            for (let n of names) {
-                loadHandicap(n[0]);
+        function addCourses() {
+            for (let c of JSON.parse(localStorage.getItem("names"))) {
+                addCourse(c[1], c[0]);
             }
         }
 
-        function loadHandicap(pid) {
-            get("/player/" + pid, (data) => {
-                let d = JSON.parse(data);
-                addItem(d.name, d.handicap, pid);
-            });
-        }
-
-        function getPids() {
-            let names = JSON.parse(localStorage.getItem("names"));
-            return names.map((v, i, a) => {
-                return v[0]
-            });
+        function addCourse(name, id) {
+            let li = document.createElement("li");
+            li.setAttribute("class", "collection-item");
+            li.innerHTML = '<a href="person.html?' + id + '" class="btn-flat">' + name + '</a>';
+            document.getElementById("list").appendChild(li);
         }
     </script>
 </body>

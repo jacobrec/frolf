@@ -5,9 +5,9 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <link href="external/icon.css" rel="stylesheet">
+    <link rel="stylesheet" href="external/materialize.min.css">
+    <script src="external/materialize.min.js"></script>
     <script src="js/coms.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <style>
@@ -26,6 +26,7 @@
                 <li><a href="scores.html">Scores</a></li>
                 <li><a href="courses.html">Courses</a></li>
                 <li><a href="games.html">Games</a></li>
+                <li><a href="peoples.html">People</a></li>
             </ul>
         </div>
     </nav>
@@ -47,11 +48,10 @@
     <script>
         window.onload = function () {
             M.AutoInit();
-            for(let course of JSON.parse(localStorage.getItem("courses"))){
+            for (let course of JSON.parse(localStorage.getItem("courses"))) {
                 addCourse(course[2]);
             }
-            
-            for(let name of JSON.parse(localStorage.getItem("names"))){
+            for (let name of JSON.parse(localStorage.getItem("names"))) {
                 addPeople(name[1]);
             }
         }
@@ -82,32 +82,28 @@
                     }
                 }
             }
-           
             let m = getNameKeyMap();
-            for(let i in data.players){
+            for (let i in data.players) {
                 data.players[i] = m.get(data.players[i].trim());
             }
             m = getCourseKeyMap();
             data.course = m.get(data.course.trim());
-            
-            window.location.href = server+"/playing.html?data="+btoa(JSON.stringify(data));
-            
+            window.location.href = server + "/playing.html?data=" + btoa(JSON.stringify(data));
         }
-        function getNameKeyMap(){
+
+        function getNameKeyMap() {
             let names = JSON.parse(localStorage.getItem("names"));
             let name_key = new Map();
-            
-            for(let name of names){
+            for (let name of names) {
                 name_key.set(name[1], name[0]);
             }
             return name_key;
         }
-        
-        function getCourseKeyMap(){
+
+        function getCourseKeyMap() {
             let names = JSON.parse(localStorage.getItem("courses"));
             let name_key = new Map();
-            
-            for(let name of names){
+            for (let name of names) {
                 name_key.set(name[2], name[0]);
             }
             return name_key;

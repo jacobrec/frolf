@@ -23,10 +23,11 @@ class PocketTornado():
         tornado.ioloop.IOLoop.current().start()
 
     def replaceStrings(self, path):
+        path = re.sub("/", "\\/", path)
         path = re.sub("<int>", "(\\d+)", path)
         path = re.sub("<string>", "([^\\/]+)", path)
         path = re.sub("<all>", "(.*)", path)
-        path += "/?"
+        path += "\\/?"
         return path
 
     def apifunction(self, path, verb, content_type):
@@ -62,11 +63,10 @@ class PocketTornado():
                     fmap[""] = remap[key]
                 fmap[key[:-1]] = remap[key]
             else:
-                fmap[key+"/"] = remap[key]
+                fmap[key + "/"] = remap[key]
 
         for key in fmap.keys():
             remap[key] = fmap[key]
-
 
         def fun(self, path):
             if path in remap:
@@ -75,13 +75,16 @@ class PocketTornado():
 
         a.parse_url_path = fun
 
-        self.funcs[webpath] = ((a, {'path':localpath}))
+        self.funcs[webpath] = ((a, {'path': localpath}))
+
         def wrap(func):
             return func
         return wrap
 
     def endpoints(self):
-        for path in self.funcs:
+        for path in sorted(
+                self.funcs.keys(),
+                reverse=True):  # this ensures \/(.*)\/? is at the end
             if isinstance(self.funcs[path], tuple):
                 self.handlers.append((path, *self.funcs[path]))
                 continue
@@ -155,7 +158,7 @@ class PocketTornado():
 
 
 def prettyPrintServerMessage(status, verb, path, ip, time):
-    
+
     col = None
     if 200 <= status and status < 300:
         col = colourPrinter.green
@@ -165,7 +168,7 @@ def prettyPrintServerMessage(status, verb, path, ip, time):
         col = colourPrinter.red
 
     verbColours = {
-        "GET" : colourPrinter.green,
+        "GET": colourPrinter.green,
         "POST": colourPrinter.blue,
         "PUT": colourPrinter.yellow,
         "DELETE": colourPrinter.red
@@ -179,16 +182,24 @@ def prettyPrintServerMessage(status, verb, path, ip, time):
         timeColour = colourPrinter.setColour(colourPrinter.yellow)
     else:
         timeColour = colourPrinter.setColour(colourPrinter.red)
-    
-    
+
     statusColour = ""
     normal = colourPrinter.resetColour()
     if col is not None:
         statusColour = colourPrinter.setColour(colourPrinter.black, col)
-    
-    
-    print((statusColour+"|{4}|"+normal+": "+verbColour+"{0}"+normal+" {1} ({2}) "+timeColour+"{3:.2f}ms"+normal).format(
-            verb.upper(), path, ip, time, str(status)))
+
+    print((statusColour +
+           "|{4}|" +
+           normal +
+           ": " +
+           verbColour +
+           "{0}" +
+           normal +
+           " {1} ({2}) " +
+           timeColour +
+           "{3:.2f}ms" +
+           normal).format(verb.upper(), path, ip, time, str(status)))
+
 
 class colourPrinter():
     black = 0
@@ -203,10 +214,11 @@ class colourPrinter():
     @staticmethod
     def setColour(forground=white, background=black):
         return "\033[3{};4{}m".format(forground, background)
-    
+
     @staticmethod
     def resetColour():
         return "\033[0m"
+
 
 class Error404(Exception):
     pass

@@ -40,8 +40,8 @@ def getPlayersById(pid):
     player = {}
     player["name"] = db.getPlayerName(pid)
 
-    games = db.getAllGamesByPlayer(pid)
-    player["games"] = [x[3] for x in games]
+    games = db.getAllGamesByPlayer(pid)  # cid, time, scores, gid, pars
+    player["games"] = [{"gid": x[3], "time":x[1], "cid":x[0]} for x in games]
     player["handicap"] = golf.handicap([json.loads(x[2]) for x in games], [
                                        json.loads(x[4]) for x in games])
 
@@ -67,21 +67,34 @@ def getCourseById(cid):
     course["name"] = c[1]
     course["par"] = c[0]
     r = db.getRecentGamesAtCourse(cid)
-    a = {} 
-    for x in r: # time, gid, pid, cid
+    a = {}
+    for x in r:  # time, gid, pid, cid
         gid = x[1]
         if gid in a:
             a[gid]["pid"].append(x[2])
         else:
-            a[gid] = {"time": x[0], "gid": x[1], "pid": [x[2]], "cid": x[3]} 
+            a[gid] = {"time": x[0], "gid": x[1], "pid": [x[2]], "cid": x[3]}
 
     course["recent"] = list(a.values())
     return json.dumps(course)
 
 
+@app.get("/group/games/<int>")
+def getGamesByGroup(grid):
+    g = db.getAllGamesByGroup(grid)
+    a = {}
+    for x in g:  # cid, time, scores, gid, pars, pid
+        if x[3] in a:
+            a[x[3]]["pid"].append(x[4])
+        else:
+            a[x[3]] = {"cid": x[0], "time": x[1], "gid": x[3], "pid": [x[4]]}
+    print(a)
+    return json.dumps({"games": list(a.values())})
+
+
 @app.post("/game/<int>")
 def addNewGame(data, grid):
-    pass
+    db.putGame(data["pids"], data["scores"], data["cid"], data["time"], grid)
 
 
 @app.post("/course/<int>")
@@ -89,7 +102,7 @@ def addNewCourse(data, grid):
     pass
 
 
-@app.post("players/<int>")
+@app.post("/players/<int>")
 def addNewPlayer(data, grid):
     pass
 

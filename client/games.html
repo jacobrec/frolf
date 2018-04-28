@@ -11,12 +11,8 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/coms.js"></script>
     <style>
-        h4 {
-            text-align: center;
-        }
-        
-        .item {
-            width: 60vw;
+        a {
+            color: black;
         }
     </style>
 </head>
@@ -42,47 +38,62 @@
         </li>
     </ul>
     <div class="ver cent">
+        <h4 id="course"></h4>
+        <p id="pars"></p>
         <ul id="list" class="collection with-header">
             <li class="collection-header">
-                <h4>Handicap</h4></li>
+                <h6>Recent Games</h6></li>
         </ul>
     </div>
     <script>
         window.onload = function () {
             M.AutoInit();
-            getHandicaps(getPids());
+            loadRecentGames();
             sync();
         }
 
-        function addItem(name, handicap, pid) {
+        function loadRecentGames() {
+            let m = getNameKeyMap();
+            get("/group/games/" + localStorage.getItem("groupid"), (data) => {
+                console.log(data);
+                let games = JSON.parse(data).games;
+                games.sort((a, b) => b.time - a.time);
+                for (let i in games) {
+                    if (i > 20) {
+                        break;
+                    }
+                    addGame(games[i].gid, games[i].time, games[i].pid, games[i].cid, m);
+                }
+            });
+        }
+
+        function addGame(gid, time, pids, cid, m) {
             let li = document.createElement("li");
-            li.setAttribute("class", "item hor spread collection-item clickable");
-            li.onclick = function () {
-                window.location.href = "person.html?" + pid
-            };
-            li.innerHTML = "<p>" + name + ": </p><p>" + handicap + "</p>";
+            li.setAttribute("class", "collection-item");
+            li.innerHTML = '<a href="game.html?' + gid + '"><div class="ver cent"><p>' + getCourseFromCid(cid) + '</p><p>' + prettyTime(time) + '</p><p>' + pids.map((v, i, a) => m.get(v)) + '</p></div></a>';
             document.getElementById("list").appendChild(li);
         }
 
-        function getHandicaps() {
+        function prettyTime(time) {
+            let t = new Date(time * 1000);
+            return t.toLocaleString();
+        }
+
+        function getNameKeyMap() {
             let names = JSON.parse(localStorage.getItem("names"));
-            for (let n of names) {
-                loadHandicap(n[0]);
+            let name_key = new Map();
+            for (let name of names) {
+                name_key.set(name[0], name[1]);
             }
+            return name_key;
         }
 
-        function loadHandicap(pid) {
-            get("/player/" + pid, (data) => {
-                let d = JSON.parse(data);
-                addItem(d.name, d.handicap, pid);
-            });
-        }
-
-        function getPids() {
-            let names = JSON.parse(localStorage.getItem("names"));
-            return names.map((v, i, a) => {
-                return v[0]
-            });
+        function getCourseFromCid(cid) {
+            for (let c of JSON.parse(localStorage.getItem("courses"))) {
+                if (c[0] == cid) {
+                    return c[2];
+                }
+            }
         }
     </script>
 </body>

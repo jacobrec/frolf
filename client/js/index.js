@@ -13,23 +13,10 @@ function setButtonLoc() {
     document.getElementById("newgame").style.bottom = "5vh";
 }
 
-function logout(){
+function logout() {
     localStorage.removeItem("groupid");
     window.location.href = server;
 }
-
-function syncNames(){
-    get("/group/players/"+localStorage.getItem("groupid"), function(data){
-        localStorage.setItem("names", data);
-    });
-}
-
-function syncCourses(){
-    get("/group/courses/"+localStorage.getItem("groupid"), function(data){
-        localStorage.setItem("courses", data);
-    });
-}
-
 window.onload = function () {
     M.AutoInit();
     M.Sidenav.init(document.querySelector('.sidenav'), {});
@@ -39,6 +26,5 @@ window.onload = function () {
     }
     setLogoCss();
     setButtonLoc();
-    syncNames();
-    syncCourses();
+    sync();
 }
