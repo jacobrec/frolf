@@ -48,8 +48,10 @@
         </ul>
     </div>
     <script>
+        var handilist;
         window.onload = function () {
             M.AutoInit();
+            handilist = [];
             getHandicaps(getPids());
             sync();
         }
@@ -74,8 +76,21 @@
         function loadHandicap(pid) {
             get("/player/" + pid, (data) => {
                 let d = JSON.parse(data);
-                addItem(d.name, d.handicap, pid);
+                handilist.push({
+                    "name": d.name
+                    , "handi": d.handicap
+                    , "pid": pid
+                });
+                refresh();
             });
+        }
+
+        function refresh() {
+            document.getElementById("list").innerHTML = '<li class="collection-header"><h4>Handicap</h4></li>';
+            handilist.sort((a, b) => a.handi - b.handi);
+            for (let d of handilist) {
+                addItem(d.name, d.handi, d.pid);
+            }
         }
 
         function getPids() {
