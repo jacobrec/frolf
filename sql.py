@@ -17,7 +17,7 @@ class DatabaseManager():
         self.cur.execute(
             "SELECT grid, passcode FROM groups WHERE name = '{}'".format(
                 name.strip()))
-        a = (self.cur.fetchone())
+        a = self.cur.fetchone()
         (g, p) = a
         if p != password:
             return
@@ -85,8 +85,9 @@ class DatabaseManager():
     def putPlayer(self, name, grid):
         self.cur.execute('INSERT INTO users(name, grid) VALUES("{}", {})'
                          .format(name, grid))
-        self.cur.execute('SELECT pid FROM users WHERE (name, grid) = ("{}", {})'
-                         .format(name, grid))
+        self.cur.execute(
+            'SELECT pid FROM users WHERE (name, grid) = ("{}", {})' .format(
+                name, grid))
         self.conn.commit()
         return self.cur.fetchone()[0]
 
@@ -100,6 +101,12 @@ class DatabaseManager():
                 json.dumps(pars), name, grid))
         self.conn.commit()
         return self.cur.fetchone()[0]
+
+    def putGroup(self, usr, pw):
+        self.cur.execute(
+            'INSERT INTO groups (name, passcode) VALUES("{}", "{}")'.format(
+                usr, pw))
+        self.conn.commit()
 
 
 def loginInfo():

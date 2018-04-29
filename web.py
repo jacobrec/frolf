@@ -24,12 +24,14 @@ def getCoursesFromGroup(grid):
 
 @app.get("/login/<string>/<string>")
 def getGroupByLogin(user, pw):
-    group = db.getGroupByLogin(user, pw)
-    print(group)
+    try:
+        group = db.getGroupByLogin(user, pw)
+    except TypeError:
+        group = None
     if group is None:
-        return ""
-    else:
-        return json.dumps(group)
+        db.putGroup(user, pw)
+        group = db.getGroupByLogin(user, pw)
+    return json.dumps(group)
 
 
 @app.get("/group")

@@ -32,12 +32,10 @@
     <script>
         function login() {
             let dst = "/login/" + document.getElementById("group").value + "/" + document.getElementById("password").value;
-            get(dst, function () {
-                if (myRequest.readyState === 4) {
-                    console.log(myRequest.responseText);
-                    localStorage.setItem("groupid", myRequest.responseText);
-                    window.location.href = server;
-                }
+            get(dst, function (data) {
+                console.log(data);
+                localStorage.setItem("groupid", data);
+                window.location.href = server;
             });
         }
     </script>

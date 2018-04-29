@@ -1,5 +1,8 @@
 # Frisbee Golf Server
 
+## Handicap System
+It will use a slightly modified golf handicap system, to allow for handicaps to be produced with fewer games, but will be the same after many games. It will use the best x/2 games of your last x games, where x < 20.
+
 ## Database scheme
 --------------------------------------------------------
 | USERS           | Pid  | Name   | Grid       |       |
