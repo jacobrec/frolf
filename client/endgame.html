@@ -60,12 +60,6 @@
             info = data.info;
             document.getElementById('c-name').innerHTML = getCourseKeyMap().get(info.course);
             scoreSummary();
-            let meta = {
-                "info": info
-                , "scores": game
-                , "time": parseInt((Date.now() / 1000))
-            }
-            storeData(meta);
             console.log(meta);
             sync();
         }
@@ -173,12 +167,6 @@
                 name_key.set(name[0], name[2]);
             }
             return name_key.get(name);
-        }
-
-        function storeData(game) {
-            let stored = JSON.parse(localStorage.getItem("tosync") || "[]");
-            stored.push(game);
-            localStorage.setItem("tosync", JSON.stringify(stored));
         }
     </script>
 </body>

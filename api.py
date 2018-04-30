@@ -99,8 +99,12 @@ class PocketTornado():
                 self.set_header("Access-Control-Allow-Origin", "*")
                 self.set_header(
                     'Access-Control-Allow-Methods',
-                    ', '.join([s.upper() for s in methods])
-                )
+                    ', '.join([s.upper() for s in methods]))
+
+                def options(self):
+                    self.set_status(204)
+                    self.finish()
+
         for method in methods:
             setattr(
                 tornadoHandler,

@@ -278,8 +278,20 @@
                     "scores": game
                     , "info": info
                 };
+                let meta = {
+                    "info": info
+                    , "scores": game
+                    , "time": parseInt((Date.now() / 1000))
+                }
+                storeData(meta);
                 window.location.href = 'endgame.html?data=' + btoa(JSON.stringify(data));
             }
+        }
+
+        function storeData(game) {
+            let stored = JSON.parse(localStorage.getItem("tosync") || "[]");
+            stored.push(game);
+            localStorage.setItem("tosync", JSON.stringify(stored));
         }
 
         function quit() {
