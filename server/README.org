@@ -1,0 +1,31 @@
+* Frolf, The Frisbee Golf scorecard
+
+** Client
+** Server
+*** Running
+The server expects a file names .password in the root of the project. Same directory as this readme. The .password should have the following content.
+~{:username "mysql-user-name", :password "mysql-user-password"}~
+*** API
+    - ~PUT /api/group~ expects ~{ id: [string], pass: [string] }~ returns ~{ id: [int] }~
+    - ~POST /api/group/signin~ expects ~{ usr: [string], pass: [string] }~ returns ~{ group: [int], token: [string] }~
+  Everything below this point expects a ~tok: [string]~ as part of the request. This identifies the group
+    - ~POST /api/group/courses~ returns ~{ courses: [int[]] }~
+    - ~POST /api/group/users~ returns ~{ usr: [int[]] }~
+    - ~POST /api/course~ returns ~{ name: [string], id: [int], pars: [string] }~
+    - ~POST /api/user~ returns ~{ name: [string], handicap: int }~
+    - ~POST /api/game~ returns ~{ time: [long], course: [int], players: [int[]], scores: [string[]] }~
+    - ~PUT /api/user~ expects ~{ name: [string] }~ returns ~{ id: [int] }~
+    - ~PUT /api/course~ expects ~{ name: [string], pars: [string] }~  returns ~{ course: [int] }~
+    - ~PUT /api/game~ expects ~{ course: [int], players: [int[]], scores: [int[]] }~ returns ~{ game: [int] }~
+    
+*** SQL
+The following sql scheme is used:
+**** Data Tables
+- Groups  | id (int, primary, unique), name (string unique), pass (string)
+- Users   | id (int, primary, unique), name (string), gid (int)
+- Courses | id (int, primary, unique), name (string), gid (int)
+- Holes   | cid (int), par (int), num (int)
+- Games   | id (int, primary, unique), time (long), cid (int)
+- Scores  | gid (int), pid (int), hole (int), score (int)
+**** Join Tables
+- user_game    | pid (int), gid (int)
