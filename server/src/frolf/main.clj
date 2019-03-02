@@ -4,18 +4,26 @@
 (use 'frolf.web)
 (use 'frolf.database)
 
-(defn -main [& args]
-  (println "### Starting Server " args "###")
 
+(def app
+  (-> handler
+      (parse-json-body)
+      (frolf-request)))
+
+(defn -main [& args]
   (if (some #(= % "--setup") args)
     (setup-database))
   (if (some #(= % "--fake") args)
     (fake-data))
 
-  (def app
-    (-> handler
-        (parse-json-body)
-        (frolf-request)))
-
-  (run-jetty app {:port 3000})
+  (println "### Starting Server " args "###")
   (println "### Closing Server ###"))
+
+(def system {})
+
+(defn start-server []
+  (def system (assoc system :server (run-jetty app {:port 3000, :join? false}))))
+
+(defn stop-server []
+  (.stop (system :server))
+  (def system (dissoc system :server)))

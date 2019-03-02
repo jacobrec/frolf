@@ -10,5 +10,7 @@
                  [com.layerware/hugsql "0.4.9"]
                  [com.layerware/hugsql-adapter-clojure-java-jdbc "0.4.9"]
                  [com.layerware/hugsql-adapter-clojure-jdbc "0.4.9"]]
+  :ring {:handler frolf.main/app}
   :main frolf.main
-  :repl-options {:init-ns frolf.core})
+  :repl-options {:init-ns frolf.main}
+  :plugins [[cider/cider-nrepl "0.21.1"]])

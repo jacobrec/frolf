@@ -1,7 +1,6 @@
 (ns frolf.core)
 
 (use 'frolf.database)
-(use 'frolf.web)
 
 ;;;; Security ;;;;
 
